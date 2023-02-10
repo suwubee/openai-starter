@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script>
+      async function submitForm() {
+        const inputText = document.getElementById("input-text").value;
+        //const password = document.getElementById("password").value;
+        const apiKey = "sk-xxxxxxxxxxxxxxxxxxxxx";
+        const model = "text-davinci-003";
+/**
+        if (password !== "123456") {
+          alert("Incorrect password");
+          return;
+        }
+		<label for="password">Password:</label>
+      <input type="password" id="password" />
+**/
+        const response = await fetch("https://api.openai.com/v1/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`,
+          },
+          body: JSON.stringify({
+            prompt: inputText,
+            max_tokens: 3500,
+            temperature: 0.7,
+            model: model,
+          }),
+        });
+
+        const responseJson = await response.json();
+        const responseText = responseJson.choices[0].text;
+		const prompt_tokens = responseJson.usage.prompt_tokens;
+		const completion_tokens = responseJson.usage.completion_tokens;
+		const total_tokens = responseJson.usage.total_tokens;
+        // Display the response text
+        document.getElementById("response-text").innerText = responseText;
+		document.getElementById("prompt_tokens").innerText = "输入字符: " + prompt_tokens;
+		document.getElementById("completion_tokens").innerText = "输出字符: " + completion_tokens;
+		document.getElementById("total_tokens").innerText = "合计字符: " + total_tokens;
+		document.getElementById("total_fee").innerText = "实际费用为：" + (responseJson.usage.total_tokens * 0.00002).toString() + " USD";
+      }
+    </script>
+  </head>
+  <body>
+    <h1>OpenAI API接口本地版</h1>
+    <form>
+      <label for="input-text">输入内容:</label><br />
+      <textarea id="input-text" rows="4" cols="50"></textarea>
+      <br />
+      <button type="button" onclick="submitForm()">请求</button>
+    </form>
+    <h2>返回数据:</h2>
+    <pre id="response-text"></pre>
+	<pre id="prompt_tokens"></pre>
+	<pre id="completion_tokens"></pre>
+	<pre id="total_tokens"></pre>
+	<h2>本次请求费用:</h2>
+	<pre id="total_fee"></pre>
+  </body>
+</html>
